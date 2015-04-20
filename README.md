@@ -44,12 +44,9 @@ FROM daily_uniques
 WINDOW last_7 as (ORDER BY date ASC ROWS 6 PRECEDING)
 ```
 
-*TODO*: still need to implement `hll_union_agg`.
-
 
 TODOs
 -----
 
- - [ ] Tests (starting with first understanding how to correctly test UD{A,}Fs).
- - [ ] Build a smarter fat jar, it currently includes a bunch of hadoop/hive dependencies that it doesn't need to. 
+ - [ ] Tests (starting with first understanding how to correctly test UD{A,}Fs). 
  - [ ] Support additional input types for `hll_hash`.
