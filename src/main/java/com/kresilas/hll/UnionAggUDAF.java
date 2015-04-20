@@ -58,6 +58,7 @@ public class UnionAggUDAF extends AbstractGenericUDAFResolver {
 
         @Override
         public ObjectInspector init(Mode m, ObjectInspector[] parameters) throws HiveException {
+            log.info("init, mode: " + m.toString());
             super.init(m, parameters);
 
             if (m == Mode.PARTIAL1 || m == Mode.COMPLETE) {
@@ -77,11 +78,13 @@ public class UnionAggUDAF extends AbstractGenericUDAFResolver {
 
         @Override
         public void reset(AggregationBuffer aggregationBuffer) throws HiveException {
+            log.info("reset");
             ((HLLBuffer) aggregationBuffer).reset();
         }
 
         @Override
         public void iterate(AggregationBuffer aggregationBuffer, Object[] parameters) throws HiveException {
+            log.info("iterate " + parameters[0].toString());
             if (parameters[0] == null) {
                 return;
             }
@@ -97,14 +100,17 @@ public class UnionAggUDAF extends AbstractGenericUDAFResolver {
 
         @Override
         public Object terminatePartial(AggregationBuffer aggregationBuffer) throws HiveException {
+            log.info("terminatePartial");
             return ((HLLBuffer) aggregationBuffer).toBytes();
         }
 
         @Override
         public void merge(AggregationBuffer aggregationBuffer, Object partial) throws HiveException {
             if (partial == null) {
+                log.info("merge (null)");
                 return;
             }
+            log.info("merge " + partial.toString());
 
             final byte[] partialBuffer = partialBufferOI.getPrimitiveJavaObject(partial);
             ((HLLBuffer) aggregationBuffer).merge(partialBuffer);
@@ -112,6 +118,7 @@ public class UnionAggUDAF extends AbstractGenericUDAFResolver {
 
         @Override
         public Object terminate(AggregationBuffer aggregationBuffer) throws HiveException {
+            log.info("terminate");
             return ((HLLBuffer) aggregationBuffer).toHex();
         }
     }
