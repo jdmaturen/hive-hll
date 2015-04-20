@@ -12,6 +12,7 @@ import org.apache.hadoop.hive.serde2.objectinspector.primitive.BinaryObjectInspe
 import org.apache.hadoop.hive.serde2.objectinspector.primitive.LongObjectInspector;
 import org.apache.hadoop.hive.serde2.objectinspector.primitive.PrimitiveObjectInspectorFactory;
 import org.apache.hadoop.hive.serde2.objectinspector.primitive.PrimitiveObjectInspectorUtils;
+import org.apache.hadoop.hive.serde2.objectinspector.primitive.StringObjectInspector;
 import org.apache.hadoop.hive.serde2.typeinfo.PrimitiveTypeInfo;
 import org.apache.hadoop.hive.serde2.typeinfo.TypeInfo;
 import org.apache.log4j.Logger;
@@ -76,15 +77,25 @@ public class AddAggUDAF extends AbstractGenericUDAFResolver {
         public ObjectInspector init(Mode m, ObjectInspector[] parameters) throws HiveException {
             super.init(m, parameters);
 
-            if (m == Mode.PARTIAL1 || m == Mode.COMPLETE) {
-                this.inputLongOI = (LongObjectInspector) parameters[0];
-                return PrimitiveObjectInspectorFactory.javaByteArrayObjectInspector;
-                // TODO HLL configuration parameters
-            }
+            final ObjectInspector partialOI = PrimitiveObjectInspectorFactory.javaByteArrayObjectInspector;
+            final ObjectInspector outputOI = PrimitiveObjectInspectorFactory.javaStringObjectInspector;
 
-            // in PARTIAL2 and FINAL return string representation
-            this.partialBufferOI = (BinaryObjectInspector) parameters[0];
-            return PrimitiveObjectInspectorFactory.javaStringObjectInspector;
+            switch (m) {
+                case PARTIAL1:
+                    inputLongOI = (LongObjectInspector) parameters[0];
+                    return partialOI;
+                case PARTIAL2:
+                    partialBufferOI = (BinaryObjectInspector) parameters[0];
+                    return partialOI;
+                case COMPLETE:
+                    inputLongOI = (LongObjectInspector) parameters[0];
+                    return outputOI;
+                case FINAL:
+                    partialBufferOI = (BinaryObjectInspector) parameters[0];
+                    return outputOI;
+                default:
+                    throw new RuntimeException("unknown mode:" + m);
+            }
         }
 
         @Override
