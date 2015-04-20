@@ -23,7 +23,9 @@ Usage
  - `hll_hash(string)` takes a string and returns a Murmur3 hashed long. See [The Importance of Hashing](https://github.com/aggregateknowledge/java-hll#the-importance-of-hashing).
  - `hll_cardinality(hll)` takes a hex representation of an HLL and returns the cardinality. 
  - `hll_add_agg(long)` is an aggregate function over a long which returns the hex representation of an HLL.
+ - `hll_union_agg(hll)` aggregate function which unions HLLs and returns a hex representation.
    
+*Note:* As there are no custom types in Hive, HLL generating functions return the hex representation as a string.
    
 Examples
 --------
