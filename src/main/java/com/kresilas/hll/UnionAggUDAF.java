@@ -61,14 +61,25 @@ public class UnionAggUDAF extends AbstractGenericUDAFResolver {
             log.info("init, mode: " + m.toString());
             super.init(m, parameters);
 
-            if (m == Mode.PARTIAL1 || m == Mode.COMPLETE) {
-                this.inputStringOI = (StringObjectInspector) parameters[0];
-                return PrimitiveObjectInspectorFactory.javaByteArrayObjectInspector;
-            }
+            final ObjectInspector partialOI = PrimitiveObjectInspectorFactory.javaByteArrayObjectInspector;
+            final ObjectInspector outputOI = PrimitiveObjectInspectorFactory.javaStringObjectInspector;
 
-            // in PARTIAL2 and FINAL return string representation
-            this.partialBufferOI = (BinaryObjectInspector) parameters[0];
-            return PrimitiveObjectInspectorFactory.javaStringObjectInspector;
+            switch (m) {
+                case PARTIAL1:
+                    inputStringOI = (StringObjectInspector) parameters[0];
+                    return partialOI;
+                case PARTIAL2:
+                    partialBufferOI = (BinaryObjectInspector) parameters[0];
+                    return partialOI;
+                case COMPLETE:
+                    inputStringOI = (StringObjectInspector) parameters[0];
+                    return outputOI;
+                case FINAL:
+                    partialBufferOI = (BinaryObjectInspector) parameters[0];
+                    return outputOI;
+                default:
+                    throw new RuntimeException("unknown mode:" + m);
+            }
         }
 
         @Override
