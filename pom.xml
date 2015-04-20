@@ -47,7 +47,6 @@
         <dependency>
             <groupId>org.apache.hive</groupId>
             <artifactId>hive-serde</artifactId>
-            <optional>true</optional>
             <version>${apache.hive.version}</version>
         </dependency>
 
@@ -78,7 +77,14 @@
         <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
-            <version>3.8.1</version>
+            <version>4.12</version>
+            <scope>test</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.apache.hadoop</groupId>
+            <artifactId>hadoop-core</artifactId>
+            <version>${apache.hadoop.version}</version>
             <scope>test</scope>
         </dependency>
     </dependencies>
